@@ -3,6 +3,7 @@ const {
 	register,
 	login,
 	getMe,
+	logout,
 	forgotPassword,
 	resetPassword,
 	updatePassword,
@@ -15,6 +16,7 @@ const { protect } = require('../middleware/auth');
 
 router.post('/register', register);
 router.post('/login', login);
+router.get('/logout', logout);
 router.get('/me', protect, getMe);
 router.put('/updatedetails', protect, updateDetails);
 router.post('/forgotpassword', forgotPassword);

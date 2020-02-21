@@ -7,6 +7,12 @@ const colors = require('colors');
 const errorHandler = require('./middleware/error');
 const fileupload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const cors = require('cors');
 
 //Load env vars
 dotenv.config({ path: './config/config.env' });
@@ -28,6 +34,29 @@ app.use(express.json());
 
 // Cookie parser
 app.use(cookieParser());
+
+// SQL Injection protection/sanitize
+app.use(mongoSanitize());
+
+// Set security headers
+app.use(helmet());
+
+// Prevent XSS attacks
+app.use(xss());
+
+// Rate limiter
+const limiter = rateLimit({
+	windowMs: 10 * 60 * 1000, // 15 minutes
+	max: 1 // limit each IP to 100 requests per windowMs
+});
+
+app.use(limiter);
+
+// Prevent HTTP Parameter Pollution
+app.use(hpp());
+
+// CORS
+app.use(cors());
 
 //Dev logging middleware
 if (process.env.NODE_ENV === 'development') {
